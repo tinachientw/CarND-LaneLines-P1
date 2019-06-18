@@ -8,49 +8,60 @@ Overview
 
 When we drive, we use our eyes to decide where to go.  The lines on the road that show us where the lanes are act as our constant reference for where to steer the vehicle.  Naturally, one of the first things we would like to do in developing a self-driving car is to automatically detect lane lines using an algorithm.
 
-In this project you will detect lane lines in images using Python and OpenCV.  OpenCV means "Open-Source Computer Vision", which is a package that has many useful tools for analyzing images.  
-
-To complete the project, two files will be submitted: a file containing project code and a file containing a brief write up explaining your solution. We have included template files to be used both for the [code](https://github.com/udacity/CarND-LaneLines-P1/blob/master/P1.ipynb) and the [writeup](https://github.com/udacity/CarND-LaneLines-P1/blob/master/writeup_template.md).The code file is called P1.ipynb and the writeup template is writeup_template.md 
-
-To meet specifications in the project, take a look at the requirements in the [project rubric](https://review.udacity.com/#!/rubrics/322/view)
+In this project detect lane lines in images using Python and OpenCV.  OpenCV means "Open-Source Computer Vision", which is a package that has many useful tools for analyzing images.  
 
 
-Creating a Great Writeup
+
+
+Reflection
 ---
-For this project, a great writeup should provide a detailed response to the "Reflection" section of the [project rubric](https://review.udacity.com/#!/rubrics/322/view). There are three parts to the reflection:
+### Pipeline Description
+In this project, I developed a simple pipeline to find road lanes. The pipeline has the following steps:
 
-1. Describe the pipeline
+1. Convert the original image to grayscale
+2. Apply Gaussian blur to the grayscale image, get a blurred image
+3. Apply Canny edge detector to the blurred image, get a black image with white adges
+4. Apply ROI (region of interest) mask to the edges image to remove all edges outside ROI
+5. Apply Hough transform to the masked edges image, get a list of line points as output
+6. Transform the Hough lines into left and right lane lines:
+	* Discard lines with slopes close to 0 (slopes in range from -0.4 to 0.4)
+	* Separate remaining lines in two groups by the sign of the slope
+	* Average out slopes and intercepts for each group
+	* Return average slopes and intercepts for the left and right lane lines
+7. Draw average lane lines on the original image, such that they are only show inside ROI
+8. Save the image
 
-2. Identify any shortcomings
+Below are the images that show how the pipeline transforms the original image, according to the steps described above:
 
-3. Suggest possible improvements
+* Original image 
+<img src="test_images_output/whiteCarLaneSwitch.png">
+Grayscale image 
+<img src="test_images_output/whiteCarLaneSwitch_gray.png">
+* Blurred grayscale image 
+<img src="test_images_output/whiteCarLaneSwitch_blur.png">
+* Canny edges 
+<img src="test_images_output/whiteCarLaneSwitch_canny.png">
+* ROI mask applied to Canny edges 
+<img src="test_images_output/whiteCarLaneSwitch_mask.png">
+* Final averaged extrapolated lines (red) 
+<img src="test_images_output/whiteCarLaneSwitch_line.png">
+* Final result 
+<img src="test_images_output/whiteCarLaneSwitch_final.png">
 
-We encourage using images in your writeup to demonstrate how your pipeline works.  
+### Potential Shortcomings of Current Pipeline
 
-All that said, please be concise!  We're not looking for you to write a book here: just a brief description.
+One potential shortcoming would be what would happen when the car is driving outside road lanes. In this case both lines will have the same slope and my pipeline will likely break down and will draw only one line.
 
-You're not required to use markdown for your writeup.  If you use another method please just submit a pdf of your writeup. Here is a link to a [writeup template file](https://github.com/udacity/CarND-LaneLines-P1/blob/master/writeup_template.md). 
+Another shortcoming could be uneven color of the road surface, when there are tire markings on the road. The current pipeling got confused, when the car drove on the patch of bright concrete with black tire marks.
 
+The third shortcoming is that in the video, sometimes lines disappear for a fraction of a second. This means that the pipeline is unable to identify land lines for those frames.
 
-The Project
----
+### Possible Improvements of Pipeline
+1. dynamically change ROI depending on:
+ * road curvature
+ * whether the road slopes upward or downward
+ * speed of the vehicle
 
-## If you have already installed the [CarND Term1 Starter Kit](https://github.com/udacity/CarND-Term1-Starter-Kit/blob/master/README.md) you should be good to go!   If not, you should install the starter kit to get started on this project. ##
+2. I would also try to set up a deep learning system based on convolutional neural networks, collect some annotated data and train the network. I guess that reults would be much better, as CNN show to generalize well in computer vision tasks.
 
-**Step 1:** Set up the [CarND Term1 Starter Kit](https://classroom.udacity.com/nanodegrees/nd013/parts/fbf77062-5703-404e-b60c-95b78b2f3f9e/modules/83ec35ee-1e02-48a5-bdb7-d244bd47c2dc/lessons/8c82408b-a217-4d09-b81d-1bda4c6380ef/concepts/4f1870e0-3849-43e4-b670-12e6f2d4b7a7) if you haven't already.
-
-**Step 2:** Open the code in a Jupyter Notebook
-
-You will complete the project code in a Jupyter notebook.  If you are unfamiliar with Jupyter Notebooks, check out [Udacity's free course on Anaconda and Jupyter Notebooks](https://classroom.udacity.com/courses/ud1111) to get started.
-
-Jupyter is an Ipython notebook where you can run blocks of code and see results interactively.  All the code for this project is contained in a Jupyter notebook. To start Jupyter in your browser, use terminal to navigate to your project directory and then run the following command at the terminal prompt (be sure you've activated your Python 3 carnd-term1 environment as described in the [CarND Term1 Starter Kit](https://github.com/udacity/CarND-Term1-Starter-Kit/blob/master/README.md) installation instructions!):
-
-`> jupyter notebook`
-
-A browser window will appear showing the contents of the current directory.  Click on the file called "P1.ipynb".  Another browser window will appear displaying the notebook.  Follow the instructions in the notebook to complete the project.  
-
-**Step 3:** Complete the project and submit both the Ipython notebook and the project writeup
-
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
 
