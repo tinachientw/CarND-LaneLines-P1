@@ -58,9 +58,9 @@ The third shortcoming is that in the video, sometimes lines disappear for a frac
 
 ### Possible Improvements of Pipeline
 1. dynamically change ROI depending on:
- * road curvature
- * whether the road slopes upward or downward
- * speed of the vehicle
+	* road curvature
+	* whether the road slopes upward or downward
+	* speed of the vehicle
 
 2. I would also try to set up a deep learning system based on convolutional neural networks, collect some annotated data and train the network. I guess that reults would be much better, as CNN show to generalize well in computer vision tasks.
 
